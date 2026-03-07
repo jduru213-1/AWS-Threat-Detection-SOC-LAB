@@ -1,10 +1,12 @@
 # AWS Threat Detection SOC Lab
 
-Hands-on lab for AWS threat detection with Splunk: run Splunk locally, stand up AWS logging (CloudTrail, Config, VPC Flow Logs) with one script, and practice detection. **Build** brings the environment up; **destroy** tears it down.
+**Welcome to the AWS Threat Detection SOC Lab.**
+
+This project gives you a hands-on environment to learn AWS threat detection with Splunk: run Splunk locally in Docker, stand up AWS logging (CloudTrail, Config, VPC Flow Logs) with one script, and practice detection. **Build** brings the environment up; **destroy** tears it down. No need to manage Terraform by hand unless you want to—the scripts handle it.
 
 ---
 
-## What you need
+## 📋 What you need
 
 | Requirement | Purpose |
 |-------------|---------|
@@ -15,7 +17,9 @@ Hands-on lab for AWS threat detection with Splunk: run Splunk locally, stand up 
 
 ---
 
-## Quick start
+## 🚀 Quick start
+
+Do these in order.
 
 **1. Start Splunk**
 
@@ -48,7 +52,7 @@ Enter AWS credentials, type **yes** to apply. Copy the **bucket names** and **Sp
 
 ---
 
-## Shutting down
+## 🛑 Shutting down
 
 ```powershell
 cd infra
@@ -59,14 +63,14 @@ Enter credentials if prompted, type **yes** to confirm. The script empties S3 an
 
 ---
 
-## After setup
+## 📦 After setup
 
 - **Add-on:** Add your AWS account (key/secret from build output) and S3 inputs for each bucket so data flows into the indexes.
 - **Practice:** Use `detections/` and `attacks/` once data is flowing.
 
 ---
 
-## Project layout
+## 📁 Project layout
 
 | Path | Purpose |
 |------|---------|
@@ -74,4 +78,8 @@ Enter credentials if prompted, type **yes** to confirm. The script empties S3 an
 | `soc/` | Splunk (Docker), add-on drop folder, index setup. |
 | `scripts/` | Splunk setup (e.g. index creation). |
 
-Advanced users can run Terraform from `infra/` (`terraform plan` / `apply` / `destroy`). See [infra/README.md](infra/README.md) for options (region, project name).
+---
+
+## 🔧 Advanced
+
+Run Terraform yourself from `infra/`: `terraform plan` / `apply` / `destroy`. See [infra/README.md](infra/README.md) for options (region, project name).
