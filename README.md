@@ -1,4 +1,4 @@
-# 🛡️ AWS Threat Detection Soc Lab
+# 🛡️ AWS Threat Detection SOC Lab
 
 This project is a Terraform-and-script-driven lab for standing up **AWS logging** (CloudTrail, Config, VPC Flow Logs) into **S3** and ingesting that data into **Splunk** running locally in Docker. It gives you a repeatable, Infrastructure-as-Code path to practice threat detection and search without hand-wiring every bucket and input.
 
