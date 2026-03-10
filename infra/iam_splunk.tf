@@ -75,6 +75,29 @@ resource "aws_iam_user_policy" "splunk_vpcflow" {
   })
 }
 
+# Allow Splunk to consume SQS notifications for S3-based ingestion (optional).
+resource "aws_iam_user_policy" "splunk_sqs" {
+  count = var.create_splunk_iam_user && var.enable_sqs_s3_inputs ? 1 : 0
+
+  name = "${var.project_name}-splunk-sqs"
+  user = aws_iam_user.splunk[0].name
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "sqs:ListQueues",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:ChangeMessageVisibility"
+      ]
+      Resource = "*"
+    }]
+  })
+}
+
 # Access key for the Splunk add-on. Secret is in terraform output (sensitive).
 resource "aws_iam_access_key" "splunk" {
   count = var.create_splunk_iam_user ? 1 : 0

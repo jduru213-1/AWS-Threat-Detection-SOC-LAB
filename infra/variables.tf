@@ -80,3 +80,16 @@ variable "create_splunk_iam_user" {
   type        = bool
   default     = true
 }
+
+# -----------------------------------------------------------------------------
+# enable_sqs_s3_inputs
+# -----------------------------------------------------------------------------
+# When true, creates SQS queues and S3 bucket notifications for SQS-based S3
+# ingestion with the Splunk Add-on for AWS. This is optional; plain S3 inputs
+# work without SQS.
+# -----------------------------------------------------------------------------
+variable "enable_sqs_s3_inputs" {
+  description = "Enable SQS-based S3 ingestion (queues + bucket notifications)"
+  type        = bool
+  default     = true
+}

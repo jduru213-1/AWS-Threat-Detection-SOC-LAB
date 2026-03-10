@@ -117,7 +117,7 @@ Direct Terraform use: [infra/README.md](../infra/README.md).
 
 Connect the add-on to your buckets so Splunk pulls events from S3.
 
-> **Less is more:** keep inputs **plain S3**. SQS-based S3 is out of scope for this lab.
+> **Tip:** Plain S3 is simplest. SQS-based S3 is supported if you enable the queues in Terraform.
 
 ### Build output to use
 
@@ -147,10 +147,10 @@ Use **plain S3** only—do not use SQS-based S3 inputs.
 
 | Pattern | Behavior | This lab |
 |---------|----------|----------|
-| **Plain S3** | Splunk lists and reads objects in the bucket. | **Use this.** |
-| **SQS-based S3** | S3 events go to a queue; Splunk consumes the queue. | Do not use. |
+| **Plain S3** | Splunk lists and reads objects in the bucket. | Supported |
+| **SQS-based S3** | S3 events go to a queue; Splunk consumes the queue. | Supported (optional) |
 
-The IAM user `soc-lab-splunk-addon` is **S3-only** by design (`s3:GetObject`, `s3:ListBucket` on the three buckets). SQS paths require `sqs:ListQueues`, `sqs:ReceiveMessage`, etc. If the add-on UI probes SQS, you may see `AccessDenied`—that is expected. **Choose plain S3 inputs only**; you can ignore SQS errors if you are not using SQS-based inputs.
+If you choose SQS-based inputs, re-run Terraform so the queues and permissions exist (Step 4), then configure the input with the queue that matches the bucket.
 
 ### What each source writes
 
