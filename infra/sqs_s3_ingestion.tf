@@ -1,9 +1,27 @@
+resource "aws_sqs_queue" "cloudtrail_s3_events_dlq" {
+  count = var.enable_sqs_s3_inputs ? 1 : 0
+
+  name                      = "${var.project_name}-cloudtrail-s3-events-dlq-${local.suffix}"
+  message_retention_seconds = 1209600 # 14 days
+}
+
 resource "aws_sqs_queue" "cloudtrail_s3_events" {
   count = var.enable_sqs_s3_inputs ? 1 : 0
 
   name                       = "${var.project_name}-cloudtrail-s3-events-${local.suffix}"
   message_retention_seconds  = 345600 # 4 days
   visibility_timeout_seconds = 300
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.cloudtrail_s3_events_dlq[0].arn
+    maxReceiveCount     = 5
+  })
+}
+
+resource "aws_sqs_queue" "config_s3_events_dlq" {
+  count = var.enable_sqs_s3_inputs && var.enable_config ? 1 : 0
+
+  name                      = "${var.project_name}-config-s3-events-dlq-${local.suffix}"
+  message_retention_seconds = 1209600
 }
 
 resource "aws_sqs_queue" "config_s3_events" {
@@ -12,6 +30,17 @@ resource "aws_sqs_queue" "config_s3_events" {
   name                       = "${var.project_name}-config-s3-events-${local.suffix}"
   message_retention_seconds  = 345600
   visibility_timeout_seconds = 300
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.config_s3_events_dlq[0].arn
+    maxReceiveCount     = 5
+  })
+}
+
+resource "aws_sqs_queue" "vpcflow_s3_events_dlq" {
+  count = var.enable_sqs_s3_inputs && var.enable_vpc_flow_logs ? 1 : 0
+
+  name                      = "${var.project_name}-vpcflow-s3-events-dlq-${local.suffix}"
+  message_retention_seconds = 1209600
 }
 
 resource "aws_sqs_queue" "vpcflow_s3_events" {
@@ -20,6 +49,10 @@ resource "aws_sqs_queue" "vpcflow_s3_events" {
   name                       = "${var.project_name}-vpcflow-s3-events-${local.suffix}"
   message_retention_seconds  = 345600
   visibility_timeout_seconds = 300
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.vpcflow_s3_events_dlq[0].arn
+    maxReceiveCount     = 5
+  })
 }
 
 resource "aws_sqs_queue_policy" "cloudtrail_s3_events" {
