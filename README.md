@@ -10,13 +10,31 @@ Built by me, with AI assistance (Cursor and Codex) to speed up iteration and doc
 
 ---
 
-## Requirements
+## ✨ Overview
+
+This repo is a repeatable lab for standing up **AWS logging** and ingesting it into **Splunk** so you can practice **search + detection engineering** with real telemetry.
+
+---
+
+## 🧩 Components (what you’re building)
+
+| Component | What it does | Where |
+|----------|--------------|------|
+| Splunk (Docker) | Local Splunk Enterprise for searching and dashboards | `soc/` |
+| Index setup | Creates `aws_cloudtrail`, `aws_config`, `aws_vpcflow` | `scripts/setup_splunk.py` |
+| Splunk Add-on for AWS | Pulls logs from S3 into the right index | Splunk UI |
+| AWS logging | CloudTrail, Config, VPC Flow Logs → S3 buckets | `infra/` (Terraform) |
+| Stratus Red Team | Generates “known-bad” activity to validate detections | `attacks/` |
+
+---
+
+## ✅ Requirements
 
 Docker Desktop · Python 3.10+ · AWS account · PowerShell · `aws configure`
 
 ---
 
-## Quick start
+## 🚀 Deployment (quick start)
 
 | Step | Action |
 |------|--------|
@@ -31,13 +49,13 @@ Docker Desktop · Python 3.10+ · AWS account · PowerShell · `aws configure`
 
 ---
 
-## Verify
+## 🔎 Verify data
 
 Splunk Search: `index=aws_cloudtrail earliest=-1h` (and `aws_config`, `aws_vpcflow`). Wait if empty.
 
 ---
 
-## Cleanup
+## 🧹 Cleanup
 
 ```powershell
 cd infra
@@ -48,7 +66,14 @@ Same credentials as build (not Stratus).
 
 ---
 
-## Layout
+## 🔐 Notes on security
+
+- Don’t commit `.env*` files or access keys.
+- Use `soc-lab-splunk-addon` only for ingestion and `soc-lab-stratus` only for attack simulation.
+
+---
+
+## 🗂️ Layout
 
 | Path | What |
 |------|------|

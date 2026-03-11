@@ -1,4 +1,4 @@
-# Guides
+# 📚 Guides
 
 | Step | Link | What |
 |------|------|------|
