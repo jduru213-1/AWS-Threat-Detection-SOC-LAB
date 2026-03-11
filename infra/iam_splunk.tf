@@ -28,7 +28,7 @@ resource "aws_iam_user_policy" "splunk_cloudtrail" {
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
-      Action = ["s3:GetObject", "s3:ListBucket"]
+      Action = ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket"]
       Resource = [
         aws_s3_bucket.cloudtrail.arn,
         "${aws_s3_bucket.cloudtrail.arn}/*"
@@ -47,7 +47,7 @@ resource "aws_iam_user_policy" "splunk_config" {
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
-      Action = ["s3:GetObject", "s3:ListBucket"]
+      Action = ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket"]
       Resource = [
         aws_s3_bucket.config[0].arn,
         "${aws_s3_bucket.config[0].arn}/*"
@@ -66,7 +66,7 @@ resource "aws_iam_user_policy" "splunk_vpcflow" {
     Version = "2012-10-17"
     Statement = [{
       Effect = "Allow"
-      Action = ["s3:GetObject", "s3:ListBucket"]
+      Action = ["s3:GetObject", "s3:GetObjectVersion", "s3:ListBucket"]
       Resource = [
         aws_s3_bucket.vpc_flow_logs[0].arn,
         "${aws_s3_bucket.vpc_flow_logs[0].arn}/*"
