@@ -36,14 +36,44 @@ Docker Desktop · Python 3.10+ · AWS account · PowerShell · `aws configure`
 
 ## 🚀 Deployment (quick start)
 
-| Step | Action |
-|------|--------|
-| 1 | `cd soc` → `docker compose up -d` → https://localhost:8000 |
-| 2 | `pip install splunk-sdk` → `python ./scripts/setup_splunk.py` |
-| 3 | Install [Splunk Add-on for AWS](https://splunkbase.splunk.com/app/1876/) (Apps → Install from file) |
-| 4 | `cd infra` → `.\build.ps1` → save bucket names + Splunk IAM keys from output |
-| 5 | Add-on: **AWS Account** (paste keys) → **Inputs** → 3 S3 inputs (CloudTrail, Config, VPC Flow; buckets from step 4; indexes `aws_cloudtrail`, `aws_config`, `aws_vpcflow`) |
-| 6 | Optional [Stratus](attacks/README.md): `cd attacks` → `.\configure-stratus.ps1` → `stratus list --platform aws` |
+1. Start Splunk (Docker):
+
+```bash
+cd soc
+docker compose up -d
+```
+
+Open https://localhost:8000
+
+2. Create indexes:
+
+```bash
+pip install splunk-sdk
+python ./scripts/setup_splunk.py
+```
+
+3. Install the [Splunk Add-on for AWS](https://splunkbase.splunk.com/app/1876/) (Apps → Install from file), then restart Splunk.
+
+4. Build AWS resources:
+
+```powershell
+cd infra
+.\build.ps1
+```
+
+Save the bucket names + Splunk IAM keys from the output.
+
+5. Configure the add-on:
+   - Configuration → AWS Account (paste keys)
+   - Inputs → create 3 S3 inputs (CloudTrail/Config/VPC Flow) pointing at the buckets from Step 4 and indexes `aws_cloudtrail`, `aws_config`, `aws_vpcflow`
+
+6. Optional Stratus Red Team:
+
+```powershell
+cd attacks
+.\configure-stratus.ps1
+stratus list --platform aws
+```
 
 [Full steps](guides/step-by-step.md)
 
