@@ -1,18 +1,17 @@
 # 🛡️ AWS Threat Detection SOC Lab
-This project is a Terraform-based SOC lab for learning AWS threat detection. It stands up core AWS telemetry (CloudTrail, AWS Config, and VPC Flow Logs), delivers it to S3 (optionally via SQS), and ingests it into Splunk running locally in Docker so you can practice investigations and build detections with real logs. It also includes Stratus Red Team to generate controlled “known-bad” activity for validation.
+This project is a Terraform-based SOC lab for learning AWS threat detection and securtiy monitoring. It stands up core AWS telemetry, delivers it to S3 (optionally via SQS), and ingests it into Splunk running locally in Docker so you can practice investigations and build detections with real logs. It also includes Stratus Red Team to generate controlled “known-bad” activity for validation.
 
-I built this for cloud threat detection and monitoring end-to-end: generate telemetry, ingest it into Splunk, and iterate on detections. I’m sharing the repo so others can run the same workflow, save time, and get real AWS telemetry so you can eventually catch those "bad guys" in the cloud!
+---
 
-<p align="center">
-  <img width="1330" height="778" alt="Architecture: AWS → S3 → (optional SQS) → Splunk (Docker)" src="https://github.com/user-attachments/assets/c8b22a6b-affa-441a-88df-82d818fa1a4e" />
-</p>
+## Diagram
+![Architecture: AWS to S3 (optional SQS) to Splunk Docker](https://github.com/user-attachments/assets/c8b22a6b-affa-441a-88df-82d818fa1a4e)
 
 ---
 
 ## Overview
 This repo is a repeatable environment for setting up AWS logging and ingesting it into Splunk. The goal is simple: generate realistic AWS telemetry, run “known-bad” activity, and practice building detections based on what analysts actually see.
 
-## What you get (high level)
+## What You Get (high level)
 1. AWS telemetry
    - CloudTrail (management/API event trail) → S3
    - AWS Config (config change history) → S3
@@ -60,7 +59,7 @@ python ./scripts/setup_splunk.py
 ### 3) Install the Splunk Add-on for AWS
 Install the Splunk Add-on for AWS from [Splunkbase](https://splunkbase.splunk.com/app/1876/) and restart Splunk.
 
-### 4) Build AWS resources (Terraform)
+### 4) Build AWS Resources (Terraform)
 ```powershell
 cd infra
 .\build.ps1
@@ -77,7 +76,7 @@ In the Splunk Add-on:
 
 Tip: start with plain S3 inputs. If you see SQS/Add-on errors, use the repo’s troubleshooting guidance below.
 
-### 6) (Optional) Run Stratus Red Team
+### 6) Run Stratus Red Team
 ```powershell
 cd attacks
 .\configure-stratus.ps1
@@ -88,7 +87,7 @@ Then run a technique:
 stratus detonate <technique-id> --cleanup
 ```
 
-## How ingestion works (data flow)
+## How Ingestion Works (data flow)
 At a high level, your pipeline is:
 
 1. CloudTrail / AWS Config / VPC Flow Logs → S3
@@ -104,7 +103,7 @@ Two ingestion modes exist:
 
 Terraform supports SQS-based ingestion via `enable_sqs_s3_inputs` (default is `true`), but it only helps if you configure the Splunk Add-on inputs accordingly.
 
-## Verify data in Splunk
+## Verify Data in Splunk
 Start with:
 `index=aws_cloudtrail earliest=-1h`
 And repeat for:
@@ -153,5 +152,7 @@ cd infra
 | `guides/` | Step-by-step walkthrough |
 | `attacks/` | Stratus Red Team instructions |
 
+---
+
 *Created by Justin Duru*  
-*Collect signals from AWS. Build detections in Splunk Enterprise. Validate with Stratus.*
+*Collect AWS signals. Build detections in Splunk. Validate with Stratus.*
