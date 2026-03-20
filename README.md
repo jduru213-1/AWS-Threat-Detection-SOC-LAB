@@ -1,8 +1,6 @@
 # 🛡️ AWS Threat Detection SOC Lab
 
-CloudTrail, Config, VPC Flow → S3 → Splunk (Docker). Detection practice + Stratus Red Team.
-
-Built by me, with AI assistance (Cursor and Codex) to speed up iteration and documentation.
+I created this lab to build cloud security skills from a SOC viewpoint, practice detecting real attacks in AWS, and document the setup with help from AI tools (Cursor, Codex).
 
 <p align="center">
   <img width="1330" height="778" alt="Architecture: AWS → S3 → SQS → Splunk (Docker)" src="https://github.com/user-attachments/assets/c8b22a6b-affa-441a-88df-82d818fa1a4e" />
