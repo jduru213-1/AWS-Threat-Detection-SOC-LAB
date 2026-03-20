@@ -66,9 +66,9 @@ Confirm with `yes`. **Save from output:** bucket names, `soc-lab-splunk-addon` a
 | Config | config bucket | `aws_config` |
 | VPC Flow Logs | vpcflow bucket | `aws_vpcflow` |
 
-Use **plain S3** inputs (no SQS). If add-on shows SQS errors, leave Assume Role blank and use S3-only.
+Use plain S3 inputs (no SQS). If add-on shows SQS errors, leave Assume Role blank and use S3-only.
 
-**Verify:** `index=aws_cloudtrail earliest=-30m` (and aws_config, aws_vpcflow). Wait and retry if empty.
+Verify: `index=aws_cloudtrail earliest=-30m` (and `aws_config`, `aws_vpcflow`). Wait and retry if empty.
 
 ---
 
