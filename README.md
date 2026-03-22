@@ -21,6 +21,12 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 
 ![Architecture: AWS to S3 (optional SQS) to Splunk Docker](https://github.com/user-attachments/assets/c65afbe7-7817-4510-8017-30ffeb521446)
 
+## How ingestion works (data flow)
+1. CloudTrail / AWS Config / VPC Flow Logs write objects to S3
+2. S3 sends ObjectCreated notifications to SQS queues (provisioned by Terraform)
+3. Splunk Add-on polls SQS, reads messages, fetches referenced S3 objects
+4. Events are written to Splunk indexes (`aws_*`)
+
 ---
 
 ## Table of contents
@@ -31,10 +37,7 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 - [Quick start (end-to-end)](#quick-start-end-to-end)
 - [How ingestion works (data flow)](#how-ingestion-works-data-flow)
 - [Verify data in Splunk](#verify-data-in-splunk)
-- [Detection practice (starter searches)](#detection-practice-starter-searches)
-- [Troubleshooting](#troubleshooting)
 - [Cleanup](#cleanup)
-- [Notes on security](#notes-on-security)
 - [Repo layout](#repo-layout)
 
 ---
@@ -125,13 +128,6 @@ stratus detonate <technique-id> --cleanup
 ```
 
 For exercise ideas and dashboard steps, see [`guides/step-by-step.md`](guides/step-by-step.md) section 7.
-
-## How ingestion works (data flow)
-SQS-based S3 ingestion (project standard):
-1. CloudTrail / AWS Config / VPC Flow Logs write objects to S3
-2. S3 sends ObjectCreated notifications to SQS queues (provisioned by Terraform)
-3. Splunk Add-on polls SQS, reads messages, fetches referenced S3 objects
-4. Events are written to Splunk indexes (`aws_*`)
 
 ## Verify data in Splunk
 Start with:
