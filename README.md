@@ -1,5 +1,5 @@
 # 🛡️ AWS Threat Detection SOC Lab
-Imagine spinning up a cloud SOC lab where the infrastructure is already in place, so you can focus on what matters most such as adversary simulation, detection engineering, and real investigation practice. I built this Terraform-based project as a repeatable, cost-conscious AWS threat detection environment so others can learn (including me) by doing and focus on practical security outcomes, not just setup steps.
+Imagine spinning up a cloud SOC lab where the infrastructure is already in place, so you can focus on what matters most such as adversary simulation, detection engineering, and real investigation practice. I built this Terraform-based project as a repeatable, cost-conscious AWS threat detection environment so others can learn (including me) by doing and focus on practical security outcomes.
 
 > Terraform handles the infrastructure heavy lifting so you can focus on cloud detections, not setup friction.
 
