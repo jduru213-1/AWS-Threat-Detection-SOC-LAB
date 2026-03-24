@@ -1,5 +1,5 @@
 # AWS Threat Detection SOC Lab
-Imagine a cloud SOC lab where the infrastructure is already handled, so you can focus on what actually builds skill: adversary simulation, investigation practice, and detection engineering in Splunk.
+Imagine a cloud SOC lab where the infrastructure is already handled, so you can focus on what actually builds skill: adversary simulation, investigation practice, and detection engineering in Splunk. This project gives you a repeatable environment to understand how AWS telemetry flows from collection to investigation, then into practical detection tuning.
 
 > Terraform handles the infrastructure heavy lifting so you can focus on cloud detections, not setup friction.
 

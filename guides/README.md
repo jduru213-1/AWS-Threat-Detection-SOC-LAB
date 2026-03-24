@@ -12,4 +12,3 @@ Use these guides for a clear, step-by-step walkthrough.
 | 6 | [Red team](step-by-step.md#6-red-team-stratus) | Run Stratus attack simulations |
 | 7 | [Detections](step-by-step.md#7-detections--dashboard) | Review detections and dashboards |
 
-When you're done, tear down with `cd infra && ./destroy.sh` (using build/admin credentials).
