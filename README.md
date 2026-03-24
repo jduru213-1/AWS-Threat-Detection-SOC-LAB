@@ -3,9 +3,6 @@ This project is a practical AWS threat detection lab built for hands-on SOC lear
 
 > Terraform handles the infrastructure heavy lifting so you can focus on cloud detections, not setup friction.
 
-## Why this project matters
-Cloud SOC work is strongest when detections are tested against realistic behavior, not just theory. This lab gives you a repeatable way to generate AWS telemetry, ingest it into Splunk, and validate detection logic with controlled attack simulation.
-
 ## Quick Project Snapshot
 | Area | Details |
 |------|---------|
@@ -31,12 +28,10 @@ This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, 
 ---
 
 ## Table of contents
-- [Why this project matters](#why-this-project-matters)
 - [Quick Project Snapshot](#quick-project-snapshot)
 - [Architecture](#architecture)
 - [Overview](#overview)
 - [Portfolio outcomes](#portfolio-outcomes)
-- [Skills demonstrated](#skills-demonstrated)
 - [Components](#components)
 - [Prerequisites](#prerequisites)
 - [Quick start](#quick-start-end-to-end)
@@ -58,12 +53,6 @@ This repo is structured as a full SOC practice loop:
 - Implemented SQS-based ingestion from S3 into Splunk.
 - Validated detections with controlled Stratus Red Team simulations.
 - Documented a workflow that is easy to rebuild and demonstrate.
-
-## Skills demonstrated
-- Cloud detection engineering with real AWS telemetry.
-- SIEM data onboarding and index strategy in Splunk.
-- Threat simulation and validation using Stratus Red Team.
-- Infrastructure as Code using Terraform and reproducible scripts.
 
 ## Components
 | Component | What it does | Where |
