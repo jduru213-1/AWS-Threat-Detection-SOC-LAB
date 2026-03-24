@@ -18,7 +18,7 @@ This lab mirrors a real SOC workflow: collect cloud telemetry, ingest it into Sp
 ## Architecture
 This diagram shows the end-to-end workflow: AWS telemetry is collected, stored, and ingested into Splunk for detection validation.
 
-![Architecture: AWS to S3 (optional SQS) to Splunk Docker](https://github.com/user-attachments/assets/c65afbe7-7817-4510-8017-30ffeb521446)
+![Architecture: AWS telemetry to S3 to SQS to Splunk](https://github.com/user-attachments/assets/c65afbe7-7817-4510-8017-30ffeb521446)
 
 1. AWS telemetry sources (CloudTrail, AWS Config, and VPC Flow Logs) deliver log objects to Amazon S3.
 2. Amazon S3 publishes `ObjectCreated` notifications to Amazon SQS queues provisioned by Terraform.

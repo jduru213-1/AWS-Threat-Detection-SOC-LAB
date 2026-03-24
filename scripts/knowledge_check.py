@@ -108,9 +108,9 @@ LAB_FACTS = {
     "splunk_user": "soc-lab-splunk-addon",
     "stratus_user": "soc-lab-stratus",
     "stratus_profile": "stratus-lab",
-    "build_script": r"infra\build.ps1",
-    "destroy_script": r"infra\destroy.ps1",
-    "configure_stratus_script": r"attacks\configure-stratus.ps1",
+    "build_script": r"infra\build.sh",
+    "destroy_script": r"infra\destroy.sh",
+    "configure_stratus_script": r"attacks\configure-stratus.sh",
 }
 
 TAG_AWS = "aws"
@@ -225,7 +225,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
         Mcq(
             prompt="What creates Splunk indexes for this lab?",
             options=[
-                r"infra\build.ps1",
+                r"infra\build.sh",
                 r"scripts\setup_splunk.py",
                 "Splunk Add-on for AWS auto-creates them",
                 "Docker Compose automatically provisions them",
@@ -267,7 +267,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
     ],
     "mid": [
         Mcq(
-            prompt="What does `infra\\build.ps1` do at a high level?",
+            prompt="What does `infra\\build.sh` do at a high level?",
             options=[
                 "Only formats Terraform code",
                 "Runs Terraform init/plan/apply (and installs AWS CLI/Terraform if missing)",
@@ -275,11 +275,11 @@ QUESTION_BANK: dict[Level, list[Question]] = {
                 "Only creates IAM users and nothing else",
             ],
             answer_index=1,
-            explanation="`build.ps1` wraps Terraform to create AWS resources for the lab.",
+            explanation="`build.sh` wraps Terraform to create AWS resources for the lab.",
             tags={TAG_TERRAFORM, TAG_AWS},
         ),
         Mcq(
-            prompt="Which best describes what `infra\\destroy.ps1` does before `terraform destroy`?",
+            prompt="Which best describes what `infra\\destroy.sh` does before `terraform destroy`?",
             options=[
                 "Deletes IAM users only, then exits",
                 "Empties S3 buckets (including versioned objects), then runs destroy to remove everything",
@@ -303,7 +303,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
             tags={TAG_SOC, TAG_TERRAFORM},
         ),
         Mcq(
-            prompt="You ran `attacks\\configure-stratus.ps1` and now `destroy.ps1` fails with AccessDenied. What's the most likely cause?",
+            prompt="You ran `attacks\\configure-stratus.sh` and now `destroy.sh` fails with AccessDenied. What's the most likely cause?",
             options=[
                 "Docker isn't running",
                 "Terraform is not installed",
@@ -339,7 +339,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
             tags={TAG_SPLUNK},
         ),
         Mcq(
-            prompt="Why should `infra\\destroy.ps1` NOT be run with the Stratus profile/user active?",
+            prompt="Why should `infra\\destroy.sh` NOT be run with the Stratus profile/user active?",
             options=[
                 "Stratus is read-only and cannot query Splunk",
                 "The Stratus user is meant for attacks and lacks permissions to empty S3 buckets / destroy infra",
