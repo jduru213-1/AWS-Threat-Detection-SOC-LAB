@@ -1,10 +1,10 @@
 # AWS Threat Detection SOC Lab
 
-Imagine a cloud SOC lab where building the infrastructure is part of the skill — but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building skill: adversary simulation, investigation practice, and detection engineering in Splunk.
+Imagine a cloud SOC lab where building the infrastructure is part of the skill but you never have to rebuild it from scratch. This project gives you a repeatable environment where you stand everything up once, understand how it all fits together, and from there focus on what keeps building threat detection and security monitoring skills in the cloud. 
 
 > Terraform codifies the infrastructure so you build it once and spin it up or down whenever you need it.
 
-Built this to learn and sharing it in case it's useful to others. A companion Medium blog walks through the full implementation step by step — some pieces require manual configuration in Splunk and AWS that can't be automated.
+I originally built this to learn and sharing it in case it may be useful to others. Feel free to check out the medium blog that walks through the full implementation step by step as some pieces may require manual configuration in Splunk and AWS that cannot be automated.
 
 ---
 
@@ -28,35 +28,44 @@ Each source has its own bucket, queue, and Splunk index so failures stay isolate
 | CloudTrail | Records every AWS API call — who, what, when, from where |
 | AWS Config | Tracks resource configuration changes over time |
 | VPC Flow Logs | Captures accepted/rejected network traffic on the default VPC |
-| S3 + SQS | Stores logs and notifies Splunk when new objects arrive |
-| Splunk (Docker) | Local search and detection platform |
-| IAM users | One for Splunk ingestion (read-only), one for Stratus simulations |
+| S3 and SQS | Stores logs and notifies Splunk when new objects arrive |
+| Splunk (Docker) | Local search and detection platform (SIEM) |
+| IAM users | One for Splunk ingestion (read-only), one for Stratus adversary simulations |
 
 ---
 
 ## 🚀 Quick start
 
-A full step-by-step walkthrough is in [`guides/step-by-step.md`](guides/step-by-step.md) and the Medium blog. This is the fast version.
+A full step-by-step walkthrough is in [`guides/step-by-step.md`](guides/step-by-step.md) and the Medium blog.
 
-**Prerequisites:** Docker Desktop, Python 3.10+, AWS account, `aws configure` set up, Bash terminal.
+**Prerequisites:** 
+- Docker Desktop
+- Python 3.10+
+- AWS account
+- `aws configure` set up,
+- Bash terminal.
 
 ```bash
 # 1. Start Splunk
 cd soc && docker compose up -d
 # Open https://localhost:8000
-
+```
+```
 # 2. Create indexes
 pip install splunk-sdk
 python ./scripts/setup_splunk.py --no-verify-tls
-
+```
+```
 # 3. Build AWS infrastructure
 cd infra && ./build.sh
 # Save the bucket names, SQS queue URLs, and IAM credentials from the output
-
+```
+```
 # 4. Install Splunk Add-on for AWS from Splunkbase, then configure:
 #    Configuration → AWS Account  →  paste soc-lab-splunk-addon keys
 #    Inputs → SQS-based S3        →  create inputs for each queue + index
-
+```
+```
 # 5. Verify data
 #    index=aws_cloudtrail earliest=-1h
 ```
