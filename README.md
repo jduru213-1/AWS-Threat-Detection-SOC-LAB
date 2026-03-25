@@ -84,7 +84,7 @@ stratus list --platform aws
 stratus detonate <technique-id> --cleanup
 ```
 
-The purpose of running source ./configure-stratus.sh each time you open a new terminal is to ensure your AWS profile and region are properly set for that session, since these configurations are not persisted automatically.
+The purpose of running source `./configure-stratus.sh` each time you open a new terminal is to ensure your AWS profile and region are properly set for that session, since these configurations are not persisted automatically.
 
 ---
 
