@@ -21,22 +21,24 @@ These scripts are the easiest path because they include prompts, checks, and saf
 
 If you prefer to run Terraform commands directly:
 
+### Use a saved AWS profile (recommended)
 ```bash
 cd infra
-
-# Use a saved AWS profile (recommended)
 export AWS_PROFILE=soc-lab-admin
 export AWS_REGION=us-east-1
-
-# Confirm credentials are valid
+```
+### Confirm credentials are valid
+```
 aws sts get-caller-identity
-
-# Build
+```
+### Build
+```
 terraform init
 terraform plan -out=tfplan
 terraform apply tfplan
-
-# Teardown later
+```
+### Teardown later
+```
 terraform destroy
 ```
 
