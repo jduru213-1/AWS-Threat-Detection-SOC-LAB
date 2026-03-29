@@ -34,7 +34,7 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 | AWS Config | Tracks resource configuration changes over time |
 | VPC Flow Logs | Captures accepted/rejected network traffic on the default VPC |
 | S3 and SQS | Stores logs and notifies Splunk when new objects arrive |
-| Splunk (Docker) | Local search and detection platform (SIEM) |
+| Splunk | Containerized local search and detection platform (SIEM) |
 | IAM users | One for Splunk ingestion (read-only), one for Stratus adversary simulations |
 
 ---
@@ -50,15 +50,7 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 - Docker Desktop
 - Python 3.10+
 - Bash (Git Bash on Windows)
-- AWS account (sandbox or personal )
-- AWS CLI configured (`aws configure`)
-- IAM identity that can apply the Terraform stack (sandbox AdministratorAccess is typical; `aws configure` only stores credentials)
-
-Verify before building:
-
-```bash
-aws sts get-caller-identity
-```
+- AWS Account (AdministratorAccess)
 
 ### 1. Start Splunk
 
@@ -82,6 +74,8 @@ python ./scripts/setup_splunk.py
 - Inputs are configured in step 5.
 
 ### 4. Build AWS infrastructure
+
+CLI and credentials: [Step 4 in the walkthrough](guides/step-by-step.md#step-4--build-the-aws-infrastructure).
 
 ```bash
 cd infra && ./build.sh

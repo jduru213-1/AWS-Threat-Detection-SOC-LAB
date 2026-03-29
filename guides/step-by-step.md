@@ -112,6 +112,8 @@ The add-on lets Splunk ingest from AWS. Install it now; you **configure** it in 
 
 This step uses Terraform (via **`build.sh`**) to create resources in AWS: S3 buckets, SQS queues, CloudTrail, AWS Config, VPC Flow Logs, and the IAM users Splunk and Stratus need.
 
+**Note:** `build.sh` ensures the AWS CLI (and Terraform) are available and can help install the CLI if it is missing. It resolves AWS credentials from the environment, `.env.soc-lab-admin` at the repo root, the `soc-lab-admin` profile, or an interactive prompt that saves keys to that profile. Use access keys for an identity that can apply this stack (see README prerequisites).
+
 ```bash
 cd infra
 ./build.sh
