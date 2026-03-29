@@ -50,13 +50,9 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 - Docker Desktop
 - Python 3.10+
 - Bash (Git Bash on Windows)
-- AWS account (sandbox or personal — not production)
+- AWS account (sandbox or personal )
 - AWS CLI configured (`aws configure`)
-- IAM credentials with sufficient permissions — see **IAM permissions** below
-
-### ⚠️ IAM permissions
-
-`aws configure` stores credentials but does **not** grant permissions. The identity used for `./build.sh` must be able to create IAM users, S3 buckets, SQS queues, CloudTrail, AWS Config, and VPC Flow Logs. For a personal lab, attach **AdministratorAccess** in a non-production account. A restricted role will fail mid-apply with **AccessDenied**.
+- IAM identity that can apply the Terraform stack (sandbox AdministratorAccess is typical; `aws configure` only stores credentials)
 
 Verify before building:
 
@@ -80,7 +76,10 @@ python ./scripts/setup_splunk.py
 
 ### 3. Install the Splunk Add-on for AWS
 
-Download from [Splunkbase](https://splunkbase.splunk.com/app/1876/), then in Splunk go to **Apps → Manage Apps → Install app from file**. Upload the `.tgz` and restart Splunk when prompted. **Inputs** are configured in step 5.
+- Download from [Splunkbase](https://splunkbase.splunk.com/app/1876/).
+- In Splunk: **Apps → Manage Apps → Install app from file**.
+- Upload the `.tgz` and restart Splunk when prompted.
+- Inputs are configured in step 5.
 
 ### 4. Build AWS infrastructure
 
@@ -120,7 +119,7 @@ stratus list --platform aws
 stratus detonate <technique-id> --cleanup
 ```
 
-Re-run `source ./configure-stratus.sh` in each new terminal — the AWS profile is not persisted across sessions. Use Stratus credentials for simulations only, not for `./destroy.sh`.
+Each new shell: `source ./configure-stratus.sh` (the profile doesn’t persist). Use it only for Stratus — not for `./destroy.sh`.
 
 ---
 
@@ -150,7 +149,7 @@ Share SPL or saved searches in [`detections/`](detections/) — PRs welcome.
 cd infra && ./destroy.sh
 ```
 
-Use your **build** credentials, not the Stratus profile. The script empties S3 buckets before destroy and prompts whether to retain IAM users if you plan to rebuild later.
+Use **build** credentials (not Stratus). The script empties S3 first, then prompts whether to keep the Splunk/Stratus IAM users for faster rebuilds.
 
 ---
 
