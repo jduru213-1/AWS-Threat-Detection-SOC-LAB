@@ -66,3 +66,5 @@ stratus cleanup aws.defense-evasion.vpc-remove-flow-logs
 - Use Stratus only in a sandbox/test account.
 
 Reference: [Stratus usage guide](https://stratus-red-team.cloud/user-guide/usage/)
+
+More attack walkthroughs: [Medium blog post](https://medium.com/p/a11e0ea98430/edit)
