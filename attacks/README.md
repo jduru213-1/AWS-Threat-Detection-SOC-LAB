@@ -24,13 +24,40 @@ stratus detonate <technique-id> --cleanup
 
 These actions create telemetry that flows into CloudTrail and then into Splunk, where you can validate detections.
 
-## Good starter scenarios
+## Starter playbooks
 
-- Suspicious login behavior
-- IAM privilege escalation actions
-- Security group exposure changes
-- Unexpected compute activity
-- High-volume S3 access patterns
+### 1. Privilege Escalation (CloudTrail)
+Simulates a rogue admin creating an IAM user with AdministratorAccess so you can confirm CloudTrail records the event and detections fire.
+
+```bash
+# Run the attack
+stratus detonate aws.persistence.iam-create-admin-user
+
+# Clean up
+stratus cleanup aws.persistence.iam-create-admin-user
+```
+
+### 2. S3 Data Exposure (CloudTrail)
+Tests whether you alert on bucket-policy tampering that opens a bucket to the world.
+
+```bash
+# Run the attack
+stratus detonate aws.exfiltration.s3-backdoor-bucket-policy
+
+# Clean up
+stratus cleanup aws.exfiltration.s3-backdoor-bucket-policy
+```
+
+### 3. Network Visibility Evasion (VPC Flow Logs)
+Disables VPC Flow Logs so you can prove monitoring catches attempts to blind network telemetry.
+
+```bash
+# Run the attack
+stratus detonate aws.defense-evasion.vpc-remove-flow-logs
+
+# Clean up
+stratus cleanup aws.defense-evasion.vpc-remove-flow-logs
+```
 
 ## Important notes
 
