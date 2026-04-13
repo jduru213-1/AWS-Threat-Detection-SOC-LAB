@@ -3,7 +3,7 @@ AWS Threat Detection SOC Lab - Knowledge Check (CLI)
 
 Beginner / Mid / Advanced quiz to validate understanding of:
 - SOC workflow
-- AWS logging pipeline (CloudTrail, Config, VPC Flow Logs)
+- AWS logging pipeline (CloudTrail, VPC Flow Logs)
 - Splunk ingestion and indexes
 - Terraform + scripts (build/destroy)
 - Stratus Red Team integration
@@ -101,7 +101,7 @@ Question = Mcq | Fill
 
 
 LAB_FACTS = {
-    "indexes": ["aws_cloudtrail", "aws_config", "aws_vpcflow"],
+    "indexes": ["aws_cloudtrail", "aws_vpcflow"],
     "splunk_user": "soc-lab-splunk-addon",
     "stratus_user": "soc-lab-stratus",
     "stratus_profile": "stratus-lab",
@@ -162,7 +162,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
         Mcq(
             prompt="What is Terraform used for in this lab?",
             options=[
-                "Creating AWS resources as code (S3 buckets, CloudTrail, Config, VPC Flow Logs, IAM users)",
+                "Creating AWS resources as code (S3 buckets, CloudTrail, VPC Flow Logs, IAM users, optional Stratus target)",
                 "Installing Splunk apps and add-ons",
                 "Encrypting CloudTrail logs before upload",
                 "Replacing the AWS CLI",
@@ -181,18 +181,6 @@ QUESTION_BANK: dict[Level, list[Question]] = {
             ],
             answer_index=0,
             explanation="CloudTrail is your control-plane audit log: it captures management API calls across AWS services.",
-            tags={TAG_AWS},
-        ),
-        Mcq(
-            prompt="What is AWS Config (in simple terms)?",
-            options=[
-                "A service that tracks resource configuration over time (what changed and when)",
-                "A service that blocks public S3 access automatically",
-                "A log source that replaces CloudTrail",
-                "A tool that only monitors EC2 CPU usage",
-            ],
-            answer_index=0,
-            explanation="Config helps you understand configuration drift/changes (e.g., security group or S3 policy changes).",
             tags={TAG_AWS},
         ),
         Mcq(
@@ -216,19 +204,19 @@ QUESTION_BANK: dict[Level, list[Question]] = {
                 "Build a CloudFront-backed static website",
             ],
             answer_index=1,
-            explanation="The lab stands up AWS logging (CloudTrail/Config/VPC Flow) and ingests it into Splunk for search/detection.",
+            explanation="The lab stands up AWS logging (CloudTrail + VPC Flow Logs) and ingests it into Splunk for search/detection.",
             tags={TAG_SOC, TAG_AWS, TAG_SPLUNK},
         ),
         Mcq(
             prompt="Which AWS data sources does this lab ingest?",
             options=[
-                "CloudTrail, Config, VPC Flow Logs",
+                "CloudTrail and VPC Flow Logs",
                 "GuardDuty, Inspector, Security Hub",
                 "ALB logs, RDS logs, CloudWatch Metrics",
                 "Route 53 logs, WAF logs, Shield logs",
             ],
             answer_index=0,
-            explanation="The stack focuses on CloudTrail + Config + VPC Flow Logs.",
+            explanation="The stack focuses on two sources: CloudTrail for API events and VPC Flow Logs for network traffic.",
             tags={TAG_AWS},
         ),
         Mcq(
@@ -244,9 +232,9 @@ QUESTION_BANK: dict[Level, list[Question]] = {
             tags={TAG_SPLUNK},
         ),
         Fill(
-            prompt="Fill in the 3 Splunk indexes used by this lab (comma-separated).",
+            prompt="Fill in the Splunk indexes used by this lab (comma-separated).",
             expected=", ".join(LAB_FACTS["indexes"]),
-            explanation="These indexes keep the three data sources separate and searchable.",
+            explanation="CloudTrail and VPC Flow logs land in their own indexes for clarity and retention control.",
             tags={TAG_SPLUNK},
         ),
         Mcq(
@@ -344,7 +332,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
                 "It configures SQS notifications in AWS",
             ],
             answer_index=1,
-            explanation="It creates `aws_cloudtrail`, `aws_config`, `aws_vpcflow` via the Splunk SDK.",
+            explanation="It creates `aws_cloudtrail` and `aws_vpcflow` via the Splunk SDK.",
             tags={TAG_SPLUNK},
         ),
         Mcq(
@@ -368,7 +356,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
                 "A GuardDuty detector ID and a KMS key ARN",
             ],
             answer_index=1,
-            explanation="You set AWS credentials under Configuration → AWS Account, then create SQS-based S3 inputs for CloudTrail, Config, and VPC Flow (each with its queue and index).",
+            explanation="You set AWS credentials under Configuration → AWS Account, then create SQS-based S3 inputs for CloudTrail and VPC Flow (each with its queue and index).",
             tags={TAG_SPLUNK, TAG_AWS},
         ),
         Fill(
@@ -396,7 +384,7 @@ QUESTION_BANK: dict[Level, list[Question]] = {
             tags={TAG_SPLUNK},
         ),
         Mcq(
-            prompt="Why keep CloudTrail/Config/VPC Flow in separate indexes?",
+            prompt="Why keep CloudTrail and VPC Flow logs in separate indexes?",
             options=[
                 "Splunk cannot store multiple sourcetypes in one index",
                 "It improves clarity: different retention, searches, troubleshooting, and dashboards per source",

@@ -16,16 +16,6 @@ output "cloudtrail_s3_sqs_queue_arn" {
   value       = try(aws_sqs_queue.cloudtrail_s3_events[0].arn, null)
 }
 
-output "config_s3_sqs_queue_url" {
-  description = "SQS queue subscribed to new objects in the Config bucket."
-  value       = try(aws_sqs_queue.config_s3_events[0].id, null)
-}
-
-output "config_s3_sqs_queue_arn" {
-  description = "ARN of the Config SQS queue."
-  value       = try(aws_sqs_queue.config_s3_events[0].arn, null)
-}
-
 output "vpcflow_s3_sqs_queue_url" {
   description = "SQS queue subscribed to new objects in the VPC flow logs bucket."
   value       = try(aws_sqs_queue.vpcflow_s3_events[0].id, null)

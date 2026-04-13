@@ -30,7 +30,7 @@ If you install either tool yourself, use the [AWS CLI install guide](https://doc
 
 **Read this before Step 4.**
 
-- The identity whose keys you use with **`build.sh`** must be allowed to create IAM users, S3 buckets, SQS queues, CloudTrail, AWS Config, VPC Flow Logs, and related resources.
+- The identity whose keys you use with **`build.sh`** must be allowed to create IAM users, S3 buckets, SQS queues, CloudTrail, VPC Flow Logs, and related resources.
 - A **restricted IAM user** will fail mid-apply with **`AccessDenied`**.
 - For this lab, **`AdministratorAccess`** in a **non-production account** is typical.
 
@@ -80,7 +80,6 @@ The script prompts for your Splunk password.
 | Index | Log source |
 |-------|------------|
 | `aws_cloudtrail` | AWS API activity |
-| `aws_config` | Resource configuration changes |
 | `aws_vpcflow` | Network traffic |
 
 **Troubleshooting:** **`Connection refused`** — Splunk is not fully up yet; wait ~30 seconds and retry. **Import error** — run `pip install splunk-sdk` first.
@@ -102,7 +101,7 @@ The add-on lets Splunk ingest from AWS. Install it now; you **configure** it in 
 
 ## Step 4 — Build the AWS infrastructure
 
-This step uses Terraform (via **`build.sh`**) to create resources in AWS: S3 buckets, SQS queues, CloudTrail, AWS Config, VPC Flow Logs, and the IAM users Splunk and Stratus need.
+This step uses Terraform (via **`build.sh`**) to create resources in AWS: S3 buckets, SQS queues, CloudTrail, VPC Flow Logs, and the IAM users Splunk and Stratus need.
 
 **Note:**
 
@@ -120,7 +119,7 @@ Type **`yes`** when prompted to approve the Terraform apply. The build can take 
 
 When it finishes, **save the output** — you need it in Step 5:
 
-- The three **SQS queue URLs** (CloudTrail, Config, VPC Flow)
+- The two **SQS queue URLs** (CloudTrail and VPC Flow)
 - The **`soc-lab-splunk-addon`** access key ID and secret key
 
 You can retrieve values again with **`terraform output`** from the **`infra/`** directory.
@@ -147,14 +146,13 @@ Wire Splunk to the queues Terraform created. When a new object lands in S3, SQS 
 2. **Configuration → AWS Account**.
 3. **Add** the **`soc-lab-splunk-addon`** access key and secret from Step 4.
 
-**Create three inputs (one per log source)**
+**Create two inputs (one per log source)**
 
 **Inputs → Create New Input → SQS-based S3**:
 
 | Input name (example) | Queue URL | Index |
 |----------------------|-----------|--------|
 | e.g. `cloudtrail-input` | CloudTrail SQS URL from Step 4 | `aws_cloudtrail` |
-| e.g. `config-input` | Config SQS URL from Step 4 | `aws_config` |
 | e.g. `vpcflow-input` | VPC Flow SQS URL from Step 4 | `aws_vpcflow` |
 
 **Success:** After a few minutes, run:
@@ -163,7 +161,7 @@ Wire Splunk to the queues Terraform created. When a new object lands in S3, SQS 
 index=aws_cloudtrail earliest=-30m
 ```
 
-Repeat for `aws_config` and `aws_vpcflow`. First delivery can take a minute — retry if empty.
+Repeat for `aws_vpcflow`. First delivery can take a minute — retry if empty.
 
 **Troubleshooting:** If nothing arrives after ~5 minutes, confirm queue URLs match **`terraform output`**, and that keys under **Configuration → AWS Account** are correct.
 

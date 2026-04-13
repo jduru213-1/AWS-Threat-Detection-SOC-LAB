@@ -31,13 +31,12 @@ I originally built this lab to strengthen my understanding of cloud-based threat
 | Component | What it does |
 |---|---|
 | CloudTrail | Records every AWS API call — who, what, when, from where |
-| AWS Config | Tracks resource configuration changes over time |
 | VPC Flow Logs | Captures accepted/rejected network traffic on the default VPC |
 | S3 and SQS | Stores logs and notifies Splunk when new objects arrive |
 | Splunk | Containerized local search and detection platform (SIEM) |
 | IAM users | One for Splunk ingestion (read-only), one for Stratus adversary simulations |
 
-> Cost note: AWS Config is often the largest ongoing charge. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
+> Cost note: CloudTrail and VPC Flow Logs still incur ongoing charges. Run `./destroy.sh` when the lab is idle to avoid unexpected costs.
 
 ---
 
@@ -78,6 +77,8 @@ cd infra && ./build.sh
 # Save the SQS queue URLs and IAM credentials from the output
 ```
 
+> By default the build also launches a tiny Amazon Linux EC2 instance named `soc-lab-stratus-target`. Stratus techniques can safely stop, start, or tag this instance while all API activity continues to land in the existing `aws_cloudtrail` and `aws_vpcflow` indexes. Set `create_stratus_target_instance = false` in `terraform.tfvars` if you do not need it.
+
 ### 5. Configure ingestion
 
 - **Configuration → AWS Account** — paste the `soc-lab-splunk-addon` keys from step 4
@@ -86,7 +87,6 @@ cd infra && ./build.sh
 | Queue | Index |
 |-------|--------|
 | CloudTrail SQS URL | `aws_cloudtrail` |
-| Config SQS URL | `aws_config` |
 | VPC Flow SQS URL | `aws_vpcflow` |
 
 ### 6. Verify data
@@ -95,7 +95,7 @@ cd infra && ./build.sh
 index=aws_cloudtrail earliest=-1h
 ```
 
-> Repeat for `aws_config` and `aws_vpcflow`. Allow a few minutes for the first delivery.
+> Repeat for `aws_vpcflow`. Allow a few minutes for the first delivery.
 
 ---
 
@@ -111,6 +111,8 @@ stratus detonate <technique-id> --cleanup
 ```
 
 > Every time you open a new terminal to run Stratus, run `source ./configure-stratus.sh` first. That loads the Stratus AWS profile into your current shell, and it does not persist when you start another session. Use this profile only for Stratus.
+
+> Need to disable or resize the EC2 target? Use the `create_stratus_target_instance`, `stratus_target_instance_type`, and `stratus_target_allowed_ssh_cidrs` variables under `infra/`. All activity against that instance is visible in the CloudTrail (`aws_cloudtrail`) and VPC Flow (`aws_vpcflow`) indexes you created in Step 2.
 
 ---
 

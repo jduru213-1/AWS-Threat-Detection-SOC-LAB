@@ -164,7 +164,7 @@ fi
 collect_buckets_from_outputs() {
   local names=()
   local val
-  for key in cloudtrail_bucket_name config_bucket_name vpc_flow_logs_bucket_name; do
+  for key in cloudtrail_bucket_name vpc_flow_logs_bucket_name; do
     val="$(terraform output -raw "$key" 2>/dev/null || true)"
     if [[ -n "$val" && "$val" != "null" ]]; then
       names+=("$val")
@@ -209,9 +209,8 @@ empty_bucket() {
     payload="$(aws s3api list-object-versions --bucket "$bucket" --output json 2>/dev/null || true)"
     [[ -z "$payload" ]] && break
     local delete_json
-    delete_json="$(python - <<'PY' "$payload"
-import json, sys
-raw = sys.argv[1]
+    delete_json="$(python -c 'import json, sys
+raw = sys.stdin.read()
 try:
     j = json.loads(raw)
 except Exception:
@@ -230,9 +229,7 @@ for k in ("Versions", "DeleteMarkers"):
 if objs:
     print(json.dumps({"Objects": objs}, separators=(",", ":")))
 else:
-    print("")
-PY
-)"
+    print("")' <<<"$payload")"
     [[ -z "$delete_json" ]] && break
     aws s3api delete-objects --bucket "$bucket" --delete "$delete_json" >/dev/null
   done
@@ -267,7 +264,6 @@ if [[ "$PRESERVE" == "y" || "$PRESERVE" == "yes" ]]; then
   for addr in \
     "aws_iam_access_key.splunk[0]" \
     "aws_iam_user_policy.splunk_cloudtrail[0]" \
-    "aws_iam_user_policy.splunk_config[0]" \
     "aws_iam_user_policy.splunk_vpcflow[0]" \
     "aws_iam_user_policy.splunk_sqs[0]" \
     "aws_iam_user.splunk[0]" \

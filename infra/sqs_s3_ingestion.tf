@@ -33,25 +33,6 @@ resource "aws_sqs_queue" "cloudtrail_s3_events" {
   })
 }
 
-resource "aws_sqs_queue" "config_s3_events_dlq" {
-  count = var.enable_sqs_s3_inputs && var.enable_config ? 1 : 0
-
-  name                      = "${var.project_name}-config-s3-events-dlq-${local.suffix}"
-  message_retention_seconds = 1209600
-}
-
-resource "aws_sqs_queue" "config_s3_events" {
-  count = var.enable_sqs_s3_inputs && var.enable_config ? 1 : 0
-
-  name                       = "${var.project_name}-config-s3-events-${local.suffix}"
-  message_retention_seconds  = 345600
-  visibility_timeout_seconds = 300
-  redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.config_s3_events_dlq[0].arn
-    maxReceiveCount     = 5
-  })
-}
-
 resource "aws_sqs_queue" "vpcflow_s3_events_dlq" {
   count = var.enable_sqs_s3_inputs && var.enable_vpc_flow_logs ? 1 : 0
 
@@ -92,25 +73,6 @@ resource "aws_sqs_queue_policy" "cloudtrail_s3_events" {
   })
 }
 
-resource "aws_sqs_queue_policy" "config_s3_events" {
-  count = var.enable_sqs_s3_inputs && var.enable_config ? 1 : 0
-
-  queue_url = aws_sqs_queue.config_s3_events[0].id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Sid       = "AllowS3SendMessage"
-      Effect    = "Allow"
-      Principal = { Service = "s3.amazonaws.com" }
-      Action    = "sqs:SendMessage"
-      Resource  = aws_sqs_queue.config_s3_events[0].arn
-      Condition = {
-        ArnEquals = { "aws:SourceArn" = aws_s3_bucket.config[0].arn }
-      }
-    }]
-  })
-}
-
 resource "aws_sqs_queue_policy" "vpcflow_s3_events" {
   count = var.enable_sqs_s3_inputs && var.enable_vpc_flow_logs ? 1 : 0
 
@@ -140,18 +102,6 @@ resource "aws_s3_bucket_notification" "cloudtrail_to_sqs" {
   }
 
   depends_on = [aws_sqs_queue_policy.cloudtrail_s3_events]
-}
-
-resource "aws_s3_bucket_notification" "config_to_sqs" {
-  count = var.enable_sqs_s3_inputs && var.enable_config ? 1 : 0
-
-  bucket = aws_s3_bucket.config[0].id
-  queue {
-    queue_arn = aws_sqs_queue.config_s3_events[0].arn
-    events    = ["s3:ObjectCreated:*"]
-  }
-
-  depends_on = [aws_sqs_queue_policy.config_s3_events]
 }
 
 resource "aws_s3_bucket_notification" "vpcflow_to_sqs" {

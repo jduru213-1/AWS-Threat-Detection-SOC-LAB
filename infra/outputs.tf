@@ -22,11 +22,6 @@ output "cloudtrail_trail_arn" {
   value       = aws_cloudtrail.main.arn
 }
 
-output "config_bucket_name" {
-  description = "S3 bucket for AWS Config snapshots (null if enable_config is false)."
-  value       = var.enable_config ? aws_s3_bucket.config[0].id : null
-}
-
 output "vpc_flow_logs_bucket_name" {
   description = "S3 bucket for VPC flow log files (null if VPC flow logs disabled)."
   value       = var.enable_vpc_flow_logs ? aws_s3_bucket.vpc_flow_logs[0].id : null

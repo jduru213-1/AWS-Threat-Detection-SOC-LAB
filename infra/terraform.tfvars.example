@@ -2,3 +2,6 @@
 
 aws_region   = "us-east-1"
 project_name = "soc-lab"
+# create_stratus_target_instance = true
+# stratus_target_instance_type   = "t3.micro"
+# stratus_target_allowed_ssh_cidrs = ["203.0.113.0/24"]

@@ -25,12 +25,6 @@ variable "s3_bucket_suffix" {
   default     = null
 }
 
-variable "enable_config" {
-  description = "When true, provisions AWS Config recorder, delivery channel, IAM role, Config bucket, and related policies. Set false to skip Config (e.g. lower cost)."
-  type        = bool
-  default     = true
-}
-
 variable "enable_vpc_flow_logs" {
   description = "When true, enables VPC Flow Logs on the default VPC in this region and delivers to S3. Requires a default VPC; set false if your account has none."
   type        = bool
@@ -53,4 +47,22 @@ variable "enable_sqs_s3_inputs" {
   description = "When true, creates SQS queues, queue policies, and S3 event notifications so Splunk can use SQS-based S3 inputs (recommended in this lab). Set false only if you will configure direct S3 polling in the add-on instead."
   type        = bool
   default     = true
+}
+
+variable "create_stratus_target_instance" {
+  description = "When true, provisions a small Amazon Linux EC2 instance in the default VPC so Stratus techniques have a target resource to manipulate."
+  type        = bool
+  default     = true
+}
+
+variable "stratus_target_instance_type" {
+  description = "Instance type for the Stratus target EC2 instance."
+  type        = string
+  default     = "t3.micro"
+}
+
+variable "stratus_target_allowed_ssh_cidrs" {
+  description = "Optional list of CIDR blocks that may SSH (port 22) to the Stratus target instance. Leave empty to require Session Manager or to keep the instance isolated."
+  type        = list(string)
+  default     = []
 }

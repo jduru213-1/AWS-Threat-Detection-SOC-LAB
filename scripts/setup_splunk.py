@@ -1,4 +1,4 @@
-# Create AWS indexes in Splunk (aws_cloudtrail, aws_config, aws_vpcflow).
+# Create AWS indexes in Splunk (aws_cloudtrail, aws_vpcflow).
 # Targets the default Splunk in soc/ (Docker): localhost:8089, admin user.
 # Usage: python setup_splunk.py
 
@@ -25,7 +25,6 @@ SPLUNK_USERNAME = "admin"
 # Indexes the lab uses; must exist before the Add-on sends data.
 DEFAULT_INDEXES = [
     "aws_cloudtrail",
-    "aws_config",
     "aws_vpcflow",
 ]
 

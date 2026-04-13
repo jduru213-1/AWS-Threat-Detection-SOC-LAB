@@ -6,7 +6,7 @@ This folder creates and tears down the AWS side of the lab.
 
 `build.sh` / Terraform use the **same credential chain** as the AWS CLI (`aws sts get-caller-identity` must work). They do **not** prompt for keys.
 
-The caller needs **broad permissions** to create IAM, S3, SQS, SNS, CloudTrail, Config, VPC Flow Logs, and related resources. Restricted users often see **`AccessDenied`** during apply. For a sandbox lab, **`AdministratorAccess`** on an IAM user in a test account is the usual approach. Match **region** to `aws configure` (or `AWS_REGION`) and to what you want in `variables.tf` / `aws_region`.
+The caller needs **broad permissions** to create IAM, S3, SQS, SNS, CloudTrail, VPC Flow Logs, and related resources. Restricted users often see **`AccessDenied`** during apply. For a sandbox lab, **`AdministratorAccess`** on an IAM user in a test account is the usual approach. Match **region** to `aws configure` (or `AWS_REGION`) and to what you want in `variables.tf` / `aws_region`.
 
 ## Recommended way
 
@@ -20,10 +20,11 @@ These scripts are the easiest path because they include prompts, checks, and saf
 ## What gets created
 
 - S3 buckets for telemetry
-- CloudTrail, AWS Config, and VPC Flow Logs integrations
+- CloudTrail and VPC Flow Logs integrations
 - IAM user for Splunk ingestion
 - IAM user for Stratus simulation
 - Optional SQS resources for S3-to-Splunk ingestion
+- Optional EC2 "Stratus target" instance so adversary techniques have something to manipulate
 
 ## Raw Terraform (manual option)
 

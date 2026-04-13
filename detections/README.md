@@ -1,6 +1,6 @@
 # Detections
 
-Material for Splunk in this lab. Indexes: `aws_cloudtrail`, `aws_config`, `aws_vpcflow`.
+Material for Splunk in this lab. Indexes: `aws_cloudtrail`, `aws_vpcflow`.
 
 - SPL you paste into Search, a short note about a saved search, or a brief write-up — use whatever makes it easy to reproduce or adapt.
 
