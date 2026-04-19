@@ -31,6 +31,12 @@ variable "enable_vpc_flow_logs" {
   default     = true
 }
 
+variable "enable_config" {
+  description = "When true, provisions the AWS Config recorder, delivery channel, IAM role, and S3 bucket. Set false if the account does not permit Config in this region."
+  type        = bool
+  default     = true
+}
+
 variable "create_splunk_iam_user" {
   description = "When true, creates the soc-lab-splunk-addon IAM user and access key for the Splunk Add-on for AWS (S3 read + optional SQS)."
   type        = bool

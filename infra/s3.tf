@@ -73,6 +73,53 @@ resource "aws_s3_bucket_public_access_block" "cloudtrail" {
   restrict_public_buckets = true
 }
 
+# --- AWS Config bucket (if enable_config) -------------------------------------
+resource "aws_s3_bucket" "config" {
+  count  = var.enable_config ? 1 : 0
+  bucket = "${var.project_name}-config-${local.suffix}"
+
+  force_destroy = true
+
+  tags = {
+    Name = "${var.project_name}-config"
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "config" {
+  count  = var.enable_config ? 1 : 0
+  bucket = aws_s3_bucket.config[0].id
+
+  rule {
+    id     = "expire-old-config-snapshots"
+    status = "Enabled"
+
+    filter {}
+
+    expiration {
+      days = 365
+    }
+  }
+}
+
+resource "aws_s3_bucket_versioning" "config" {
+  count  = var.enable_config ? 1 : 0
+  bucket = aws_s3_bucket.config[0].id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "config" {
+  count  = var.enable_config ? 1 : 0
+  bucket = aws_s3_bucket.config[0].id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 # --- VPC Flow Logs bucket (if enable_vpc_flow_logs) ---------------------------
 resource "aws_s3_bucket" "vpc_flow_logs" {
   count  = var.enable_vpc_flow_logs ? 1 : 0

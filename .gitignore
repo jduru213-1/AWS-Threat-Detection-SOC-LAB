@@ -44,3 +44,5 @@ soc/add-on/*.tgz
 *.log
 *.bak
 *.tmp
+# destroy.sh S3 batch delete payloads (Git Bash / Windows)
+infra/.stratus-s3-del-*

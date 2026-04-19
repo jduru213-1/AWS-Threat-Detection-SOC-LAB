@@ -125,6 +125,12 @@ fi
 
 LAB_PROFILE="${LAB_PROFILE:-soc-lab-admin}"
 
+# configure-stratus.sh leaves AWS_PROFILE=stratus-lab; that identity cannot run destroy.
+if [[ "${AWS_PROFILE:-}" == "stratus-lab" ]]; then
+  unset AWS_PROFILE
+  echo "[AWS] Cleared stratus-lab profile for destroy (use admin / $LAB_PROFILE credentials)."
+fi
+
 if [[ -z "${AWS_ACCESS_KEY_ID:-}" || -z "${AWS_SECRET_ACCESS_KEY:-}" ]]; then
   if ! aws sts get-caller-identity >/dev/null 2>&1; then
     if aws sts get-caller-identity --profile "$LAB_PROFILE" >/dev/null 2>&1; then
@@ -153,7 +159,16 @@ fi
 # Stratus profile is for simulations; teardown must use admin/build credentials.
 CALLER_ARN="$(aws sts get-caller-identity --query Arn --output text 2>/dev/null || true)"
 if [[ "$CALLER_ARN" == *"soc-lab-stratus"* ]]; then
+  if aws sts get-caller-identity --profile "$LAB_PROFILE" >/dev/null 2>&1; then
+    export AWS_PROFILE="$LAB_PROFILE"
+    echo "[AWS] Switched to profile $LAB_PROFILE for destroy."
+    CALLER_ARN="$(aws sts get-caller-identity --query Arn --output text 2>/dev/null || true)"
+  fi
+fi
+if [[ "$CALLER_ARN" == *"soc-lab-stratus"* ]]; then
   echo "Destroy is running as soc-lab-stratus. Use your build/admin profile instead."
+  echo "  unset AWS_PROFILE; export AWS_PROFILE=$LAB_PROFILE"
+  echo "  or ensure $REPO_ROOT/.env.soc-lab-admin defines SOC_LAB_ADMIN_AWS_* and retry."
   exit 1
 fi
 
@@ -201,12 +216,13 @@ mapfile -t BUCKETS < <(
 )
 
 # Delete all object versions and delete markers in batches (required for versioned buckets).
+# Pass --delete via file://... so we never exceed OS command-line limits (Windows / Git Bash).
 empty_bucket() {
   local bucket="$1"
   echo "  $bucket ..."
   while true; do
     local payload
-    payload="$(aws s3api list-object-versions --bucket "$bucket" --output json 2>/dev/null || true)"
+    payload="$(aws s3api list-object-versions --bucket "$bucket" --max-keys 500 --output json 2>/dev/null || true)"
     [[ -z "$payload" ]] && break
     local delete_json
     delete_json="$(python -c 'import json, sys
@@ -231,7 +247,23 @@ if objs:
 else:
     print("")' <<<"$payload")"
     [[ -z "$delete_json" ]] && break
-    aws s3api delete-objects --bucket "$bucket" --delete "$delete_json" >/dev/null
+    local tmp_del file_uri
+    # Git Bash /tmp is not visible to aws.exe (Windows); use repo infra dir + Windows path for --delete.
+    tmp_del="$(mktemp "$INFRA_DIR/.stratus-s3-del-XXXXXX" 2>/dev/null || echo "$INFRA_DIR/.stratus-s3-del-$$.tmp")"
+    printf '%s' "$delete_json" > "$tmp_del"
+    if command -v cygpath >/dev/null 2>&1; then
+      # Windows aws.exe: use file://C:/path (two slashes after file:), not file:///C:/...
+      # Do not percent-encode spaces — local file open fails on paths like New%20folder.
+      local winpath
+      winpath="$(cygpath -w "$tmp_del" | tr '\\' '/')"
+      file_uri="file://${winpath}"
+    else
+      local abs
+      abs="$(cd "$(dirname "$tmp_del")" && pwd)/$(basename "$tmp_del")"
+      file_uri="file://${abs// /%20}"
+    fi
+    aws s3api delete-objects --bucket "$bucket" --delete "$file_uri" >/dev/null
+    rm -f "$tmp_del"
   done
   aws s3 rm "s3://$bucket/" --recursive --quiet >/dev/null 2>&1 || true
 }

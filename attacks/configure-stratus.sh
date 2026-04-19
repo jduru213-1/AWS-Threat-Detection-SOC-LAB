@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
-set -euo pipefail
+
+# Detect whether the script is sourced into the current shell.
+_IS_SOURCED=0
+if (return 0 2>/dev/null); then
+  _IS_SOURCED=1
+fi
+
+# Only enable strict mode when executed directly. When sourced, enabling these
+# options would leak into the caller shell and can terminate interactive sessions.
+if [[ $_IS_SOURCED -eq 0 ]]; then
+  set -euo pipefail
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -68,10 +79,62 @@ install_stratus_with_go() {
   fi
 }
 
+resolve_terraform_binary() {
+  local tf_path=""
+
+  # On Windows shells, prefer PowerShell's native executable path so stratus.exe
+  # receives a usable path format (e.g., C:\...\terraform.exe).
+  if command -v powershell.exe >/dev/null 2>&1; then
+    tf_path="$(
+      powershell.exe -NoProfile -Command "(Get-Command terraform -ErrorAction SilentlyContinue).Source" 2>/dev/null \
+        | tr -d '\r' \
+        | sed -n '1p'
+    )"
+    if [[ -n "$tf_path" ]]; then
+      echo "$tf_path"
+      return 0
+    fi
+  fi
+
+  # Git Bash / Unix-style PATH lookup.
+  if command -v terraform >/dev/null 2>&1; then
+    tf_path="$(command -v terraform)"
+    if command -v cygpath >/dev/null 2>&1; then
+      # Convert /c/... to C:\... for Windows-native stratus.exe.
+      tf_path="$(cygpath -w "$tf_path" 2>/dev/null || echo "$tf_path")"
+    fi
+    echo "$tf_path"
+    return 0
+  fi
+
+  # Windows executable name.
+  if command -v terraform.exe >/dev/null 2>&1; then
+    tf_path="$(command -v terraform.exe)"
+    if command -v cygpath >/dev/null 2>&1; then
+      tf_path="$(cygpath -w "$tf_path" 2>/dev/null || echo "$tf_path")"
+    fi
+    echo "$tf_path"
+    return 0
+  fi
+
+  return 1
+}
+
 ensure_cmd aws "AWS CLI" "https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html"
 ensure_cmd awk "awk" "https://gitforwindows.org/"
 ensure_cmd sed "sed" "https://gitforwindows.org/"
 install_stratus_with_go
+
+# Prefer a locally installed Terraform binary when available. This avoids
+# failures in Stratus auto-download flows when checksum signing keys rotate/expire.
+if TF_BINARY_PATH="$(resolve_terraform_binary)"; then
+  export STRATUS_TERRAFORM_BINARY_PATH="$TF_BINARY_PATH"
+  echo "Using local Terraform binary: $STRATUS_TERRAFORM_BINARY_PATH"
+else
+  echo "[WARNING] Terraform binary not found in this shell."
+  echo "          Install Terraform once (e.g., winget install -e --id HashiCorp.Terraform),"
+  echo "          then open a new terminal and re-run: source ./configure-stratus.sh"
+fi
 
 if [[ ! -f "$ENV_PATH" ]]; then
   echo "Missing .env.stratus at $ENV_PATH. Run infra/build.sh first."
@@ -149,3 +212,9 @@ echo
 echo "Run:"
 echo "  stratus list --platform aws"
 echo "  stratus detonate <technique-id> --cleanup"
+
+if [[ $_IS_SOURCED -eq 0 ]]; then
+  echo
+  echo "[NOTE] This script was executed directly, so AWS_PROFILE/AWS_REGION were set only in a subshell."
+  echo "       Use 'source ./configure-stratus.sh' to apply variables to your current terminal."
+fi
